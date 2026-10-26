@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 	"time"
 )
@@ -69,6 +70,19 @@ func TestRouting(t *testing.T) {
 		if rec.Code != 200 || rec.Body.String() != want {
 			t.Errorf("%s: %d %q, want %q", target, rec.Code, rec.Body.String(), want)
 		}
+	}
+}
+
+func TestRootPageIsServedLocally(t *testing.T) {
+	fail := http.HandlerFunc(func(http.ResponseWriter, *http.Request) { t.Error("root must not be forwarded") })
+	rec := httptest.NewRecorder()
+	newHandler(fail, fail).ServeHTTP(rec, httptest.NewRequest(http.MethodGet, "/", nil))
+	body := rec.Body.String()
+	if rec.Code != 200 || !strings.HasPrefix(rec.Header().Get("Content-Type"), "text/html") || !strings.Contains(body, "RSSHuBalance") {
+		t.Fatalf("got %d %q %q", rec.Code, rec.Header().Get("Content-Type"), body)
+	}
+	if !strings.Contains(body, `rel="icon"`) {
+		t.Error("page should declare an icon so browsers do not request /favicon.ico")
 	}
 }
 

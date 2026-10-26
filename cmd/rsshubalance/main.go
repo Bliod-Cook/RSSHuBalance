@@ -60,11 +60,23 @@ func loadConfig(getenv func(string) string) (config, error) {
 	return cfg, nil
 }
 
+// rootPage declares an empty icon so browsers do not request /favicon.ico,
+// which would be forwarded and counted as an instance failure.
+const rootPage = `<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>RSSHuBalance</title><link rel="icon" href="data:,"></head>
+<body><h1>RSSHuBalance</h1><p>RSSHub routes on this host are forwarded to the instance pool.</p></body>
+</html>
+`
+
 // newHandler dispatches without http.ServeMux, which would redirect
 // non-canonical paths instead of forwarding them verbatim.
 func newHandler(proxyHandler, adminHandler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch {
+		case r.URL.Path == "/":
+			w.Header().Set("Content-Type", "text/html; charset=utf-8")
+			w.Write([]byte(rootPage))
 		case r.URL.Path == "/healthz":
 			w.Write([]byte("ok"))
 		case strings.HasPrefix(r.URL.Path, "/admin/"):
