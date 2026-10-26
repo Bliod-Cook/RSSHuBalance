@@ -1,0 +1,6 @@
+# Local RSSHub for real-instance tests: RSSHUB_URLS=http://localhost:1201 go test ./...
+services:
+  rsshub:
+    image: diygod/rsshub:latest
+    ports:
+      - "1201:1200"
