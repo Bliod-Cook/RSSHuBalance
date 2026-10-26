@@ -1,6 +1,13 @@
-# Local RSSHub for real-instance tests: RSSHUB_URLS=http://localhost:1201 go test ./...
 services:
-  rsshub:
-    image: diygod/rsshub:latest
+  rsshubalance:
+    image: ghcr.io/bliod-cook/rsshubalance:latest
+    restart: unless-stopped
     ports:
-      - "1201:1200"
+      - "1200:1200"
+    environment:
+      RSSHUBALANCE_ADMIN_TOKEN: ${RSSHUBALANCE_ADMIN_TOKEN:?set RSSHUBALANCE_ADMIN_TOKEN}
+    volumes:
+      - data:/data
+
+volumes:
+  data:

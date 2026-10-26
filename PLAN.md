@@ -11,7 +11,7 @@
 ## TODO
 
 - [x] 项目骨架：Go module、`cmd/rsshubalance`、Dockerfile；环境变量：监听地址（默认 `:1200`）、上游请求上限（60s）、最大尝试数（3）、管理 token、状态文件路径
-- [x] 测试环境：docker compose 启动本地 RSSHub，供代理层真实测试（未配置的路由产生真实错误页，关闭的端口产生连接失败）
+- [x] 测试环境：真实 RSSHub 实例经 `RSSHUB_URLS` 提供给代理层测试（未配置的路由产生真实错误页，关闭的端口产生连接失败）
 - [x] 实例池：字段 `url`、`max_concurrency`（默认 4）；启动时加载状态文件，变更时原子写回
 - [x] 管理 API（Bearer token）
   - `GET /admin/instances`；`PUT /admin/instances` 按 `url` 新增或更新；`DELETE /admin/instances?url=`
