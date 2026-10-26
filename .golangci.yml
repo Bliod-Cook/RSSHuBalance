@@ -1,0 +1,16 @@
+version: "2"
+
+linters:
+  settings:
+    errcheck:
+      # Response write errors mean the client is gone; nothing to handle.
+      exclude-functions:
+        - (net/http.ResponseWriter).Write
+        - (*encoding/json.Encoder).Encode
+  exclusions:
+    presets:
+      - std-error-handling
+
+formatters:
+  enable:
+    - gofmt
