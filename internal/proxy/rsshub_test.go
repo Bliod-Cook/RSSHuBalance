@@ -35,6 +35,7 @@ func TestRealRSSHubClassification(t *testing.T) {
 		{"/test/error", verdict{outcome: stats.RouteFailure}},
 		{"/test/error?format=json", verdict{outcome: stats.RouteFailure}},
 		{missingRoute, verdict{outcome: stats.RouteFailure, notFound: true}},
+		{"/favicon.ico", verdict{outcome: stats.RouteFailure}},
 	}
 	for _, u := range urls {
 		for _, c := range cases {

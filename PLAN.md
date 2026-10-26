@@ -20,7 +20,7 @@
 - [x] 响应校验：2xx 且 XML 根元素为 `rss`/`feed`/`RDF`，或可解析的 JSON；空 feed 算成功
 - [x] 错误分类（先用真实实例确认 RSSHub 错误页特征）
   - 实例级，记 `p_up` 失败：连接/DNS/TLS 错误、网关 502/504、非 RSSHub 产生的页面（如 Cloudflare 验证页）、403
-  - 路由级，记 `p_up` 成功、`p_route` 失败：RSSHub 产生的 5xx 错误页、404
+  - 路由级，记 `p_up` 成功、`p_route` 失败：RSSHub 产生的非 feed 响应（带 `Access-Control-Allow-Methods: GET` 头或为 RSSHub 错误页）、404
   - 超时（达到上游上限）：记 `p_route` 失败；尝试期间该实例无任何成功响应时再记 `p_up` 失败
   - 429：不计成败，按 `Retry-After` 冷却（缺省 60s）
 - [x] 统计模型（纯逻辑，注入时钟与随机源）

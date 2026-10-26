@@ -32,7 +32,8 @@ func classify(status int, header http.Header, body []byte, now time.Time) verdic
 		return verdict{outcome: stats.InstanceFailure}
 	case status == http.StatusNotFound:
 		return verdict{outcome: stats.RouteFailure, notFound: true}
-	case status >= 500 && isRSSHubError(body):
+	case fromRSSHub(header, body):
+		// The instance is up; the route failed or did not produce a feed.
 		// Older RSSHub versions answer a missing route with 503.
 		return verdict{outcome: stats.RouteFailure, notFound: bytes.Contains(body, []byte("NotFoundError:"))}
 	}
@@ -62,9 +63,11 @@ func isFeed(body []byte) bool {
 	}
 }
 
-// isRSSHubError recognizes RSSHub's error page and its ?format=json variant.
-func isRSSHubError(body []byte) bool {
-	if bytes.Contains(body, []byte("Looks like something went wrong")) {
+// fromRSSHub recognizes responses produced by RSSHub itself: its header
+// middleware sets Access-Control-Allow-Methods on every response, and its
+// error page and the ?format=json variant have a fixed shape.
+func fromRSSHub(header http.Header, body []byte) bool {
+	if header.Get("Access-Control-Allow-Methods") == "GET" || bytes.Contains(body, []byte("Looks like something went wrong")) {
 		return true
 	}
 	var v struct {
